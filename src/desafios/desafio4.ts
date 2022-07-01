@@ -10,17 +10,16 @@
 // Atenção para o listener do botão login-button que devolve o sessionID do usuário
 // É necessário fazer um cadastro no https://www.themoviedb.org/ e seguir a documentação do site para entender como gera uma API key https://developers.themoviedb.org/3/getting-started/introduction
 
-var apiKey = '3f301be7381a03ad8d352314dcc3ec1d';
-let apiKey;
-let requestToken;
-let username;
-let password;
-let sessionId;
+let apiKey: string;
+let requestToken: string;
+let username: string;
+let password: string;
+let sessionId: string;
 let listId = '7101979';
 
-let loginButton = document.getElementById('login-button');
-let searchButton = document.getElementById('search-button');
-let searchContainer = document.getElementById('search-container');
+let loginButton = document.getElementById('login-button') as HTMLInputElement;
+let searchButton = document.getElementById('search-button') as HTMLInputElement;
+let searchContainer = document.getElementById('search-container') as HTMLInputElement;
 
 loginButton.addEventListener('click', async () => {
   await criarRequestToken();
@@ -33,7 +32,7 @@ searchButton.addEventListener('click', async () => {
   if (lista) {
     lista.outerHTML = "";
   }
-  let query = document.getElementById('search').value;
+  let query = (document.getElementById('search') as HTMLInputElement).value;
   let listaDeFilmes = await procurarFilme(query);
   let ul = document.createElement('ul');
   ul.id = "lista"
@@ -47,17 +46,17 @@ searchButton.addEventListener('click', async () => {
 })
 
 function preencherSenha() {
-  password = document.getElementById('senha').value;
+  password = (document.getElementById('senha') as HTMLInputElement).value;
   validateLoginButton();
 }
 
 function preencherLogin() {
-  username =  document.getElementById('login').value;
+  username = (document.getElementById('login') as HTMLInputElement).value;
   validateLoginButton();
 }
 
 function preencherApi() {
-  apiKey = document.getElementById('api-key').value;
+  apiKey = (document.getElementById('api-key') as HTMLInputElement).value;
   validateLoginButton();
 }
 
@@ -101,7 +100,7 @@ class HttpClient {
   }
 }
 
-async function procurarFilme(query) {
+async function procurarFilme(query: string) {
   query = encodeURI(query)
   console.log(query)
   let result = await HttpClient.get({
@@ -111,7 +110,7 @@ async function procurarFilme(query) {
   return result
 }
 
-async function adicionarFilme(filmeId) {
+async function adicionarFilme(filmeId: string) {
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/movie/${filmeId}?api_key=${apiKey}&language=en-US`,
     method: "GET"
@@ -123,8 +122,9 @@ async function criarRequestToken () {
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/authentication/token/new?api_key=${apiKey}`,
     method: "GET"
-  })
-  requestToken = result.request_token
+  });
+  console.log(result);
+  requestToken = result.request_token;
 }
 
 async function logar() {
@@ -181,13 +181,13 @@ async function pegarLista() {
 
 {/* <div style="display: flex;">
   <div style="display: flex; width: 300px; height: 100px; justify-content: space-between; flex-direction: column;">
-      <input id="login" placeholder="Login" onchange="preencherLogin(event)">
-      <input id="senha" placeholder="Senha" type="password" onchange="preencherSenha(event)">
-      <input id="api-key" placeholder="Api Key" onchange="preencherApi()">
-      <button id="login-button" disabled>Login</button>
+      <input id="login" placeholder="login" onchange="preencherlogin(event)">
+      <input id="senha" placeholder="senha" type="password" onchange="preenchersenha(event)">
+      <input id="api-key" placeholder="api key" onchange="preencherapi()">
+      <button id="login-button" disabled>login</button>
   </div>
   <div id="search-container" style="margin-left: 20px">
-      <input id="search" placeholder="Escreva...">
-      <button id="search-button">Pesquisar Filme</button>
+      <input id="search" placeholder="escreva...">
+      <button id="search-button">pesquisar filme</button>
   </div>
 </div>*/}
