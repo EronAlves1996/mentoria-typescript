@@ -138,7 +138,8 @@ searchButton.addEventListener('click', async () => {
     if('results' in listaDeFilmes){
       for (const item of listaDeFilmes.results) {
         let li = document.createElement('li');
-        let button = document.createElement('button');
+        let button: HTMLButtonElement = document.createElement('button');
+
         button.classList.add("add-to-list-button");
         button.textContent = "Adicionar em uma lista";
         button.dataset.filmeId = item.id;
@@ -154,13 +155,22 @@ searchButton.addEventListener('click', async () => {
 
           for(let list of Array.from(lists.childNodes[1].childNodes)){
             let buttonList = document.createElement('button');
+            buttonList.classList.add('add-to-this-list-button');
             buttonList.textContent = "Adicionar filme a esta lista";
             buttonList.dataset.listId = list.dataset.listId;
+
             buttonList.addEventListener('click', (e)=>{
+              const listButtons = document.getElementsByClassName('add-to-this-list-button');
               try{
                 adicionarFilmeNaLista(filmeId, e.target.dataset.listId);
                 alert("Adicionado com sucesso");
-              } catch (e) {
+                for (let n of Array.from(listButtons)){
+                  n.remove();
+                }
+                for (let btn of Array.from(filmButtons)){
+                  btn.style.display = "inline";
+                }
+              }catch (e) {
                 console.log(e);
                 alert("algo inesperado ocorreu");
               }
