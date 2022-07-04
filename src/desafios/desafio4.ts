@@ -142,42 +142,43 @@ searchButton.addEventListener('click', async () => {
 
         button.classList.add("add-to-list-button");
         button.textContent = "Adicionar em uma lista";
-        button.dataset.filmeId = item.id;
+        button.dataset.filmeId = item.id.toString();
 
         button.addEventListener('click', (e)=>{
-          let filmeId = e.target.dataset.filmeId;
-          const lists = document.getElementById('show-lists') as HTMLElement;
-          const filmButtons = document.getElementsByClassName('add-to-list-button') as HTMLCollectionOf<HTMLButtonElement>;
-          
-          for(let btn of Array.from(filmButtons)){
-            btn.style.display = 'none';
-          }
+          if(e){
+            let filmeId = (e.target as HTMLButtonElement).dataset.filmeId;
+            const lists = document.getElementById('show-lists') as HTMLElement;
+            const filmButtons = document.getElementsByClassName('add-to-list-button') as HTMLCollectionOf<HTMLButtonElement>;
 
-          for(let list of Array.from(lists.childNodes[1].childNodes)){
-            let buttonList = document.createElement('button');
-            buttonList.classList.add('add-to-this-list-button');
-            buttonList.textContent = "Adicionar filme a esta lista";
-            buttonList.dataset.listId = list.dataset.listId;
+            for(let btn of Array.from(filmButtons)){
+              btn.style.display = 'none';
+            }
 
-            buttonList.addEventListener('click', (e)=>{
-              const listButtons = document.getElementsByClassName('add-to-this-list-button');
-              try{
-                adicionarFilmeNaLista(filmeId, e.target.dataset.listId);
-                alert("Adicionado com sucesso");
-                for (let n of Array.from(listButtons)){
-                  n.remove();
+            for(let list of Array.from(lists.childNodes[1].childNodes)){
+              let buttonList: HTMLButtonElement = document.createElement('button');
+              buttonList.classList.add('add-to-this-list-button');
+              buttonList.textContent = "Adicionar filme a esta lista";
+              buttonList.dataset.listId = (list as HTMLElement).dataset.listId;
+
+              buttonList.addEventListener('click', (e)=>{
+                const listButtons = document.getElementsByClassName('add-to-this-list-button');
+                try{
+                  adicionarFilmeNaLista(filmeId, e.target.dataset.listId);
+                  alert("Adicionado com sucesso");
+                  for (let n of Array.from(listButtons)){
+                    n.remove();
+                  }
+                  for (let btn of Array.from(filmButtons)){
+                    btn.style.display = "inline";
+                  }
+                }catch (e) {
+                  console.log(e);
+                  alert("algo inesperado ocorreu");
                 }
-                for (let btn of Array.from(filmButtons)){
-                  btn.style.display = "inline";
-                }
-              }catch (e) {
-                console.log(e);
-                alert("algo inesperado ocorreu");
-              }
-            });
-            list.appendChild(buttonList);
+              });
+              list.appendChild(buttonList);
+            }
           }
-
         });
 
         li.appendChild(document.createTextNode(item.original_title));
@@ -329,12 +330,12 @@ async function pegarLista() {
 async function pegarTodasAsListas() {
   let getAccountDetails = await HttpClient.get({   
     url:`https://api.themoviedb.org/3/account?api_key=${apiKey}&session_id=${sessionId}`,
-    method: "GET"
+      method: "GET"
   }) as accountDetails;
 
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/account/${getAccountDetails.id}/lists?api_key=${apiKey}&language=pt-BR&session_id=${sessionId}&page=1`,
-    method: "GET"
+      method: "GET"
   }) as {results: Array<{name:string, description:string}>};
 
   const showLists = document.getElementById('show-lists') as HTMLElement;
