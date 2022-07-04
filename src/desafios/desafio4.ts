@@ -29,35 +29,36 @@ loginButton.addEventListener('click', async () => {
 
 interface ListaFilmes {
   page: number;
-  results: Array<unknown>;
+  results: Array<itemFilme>;
   total_pages: number;
   total_results: number;
 }
 
+interface itemFilme {
+  original_title: string;
+}
+
 searchButton.addEventListener('click', async () => {
-  let lista = document.getElementById("lista");
+  let lista = document.getElementById("lista") as HTMLElement;
+  
   if (lista) {
     lista.outerHTML = "";
   }
+
   let query: string = (document.getElementById('search') as HTMLInputElement).value;
-  let listaDeFilmes = await procurarFilme(query);
+  let listaDeFilmes = await procurarFilme(query) as ListaFilmes;
   let ul = document.createElement('ul');
   ul.id = "lista";
 
-  console.log(listaDeFilmes);
-
   if(typeof(listaDeFilmes) === 'object' && listaDeFilmes){
     if('results' in listaDeFilmes){
-      for (const item of (listaDeFilmes as ListaFilmes).results) {
+      for (const item of listaDeFilmes.results) {
         let li = document.createElement('li');
         li.appendChild(document.createTextNode(item.original_title))
         ul.appendChild(li)
       }
     }
   }
-
-
-  console.log(listaDeFilmes);
   searchContainer.appendChild(ul);
 })
 
@@ -135,11 +136,16 @@ async function adicionarFilme(filmeId: string) {
   console.log(result);
 }
 
+interface resultRequestToken {
+  request_token: string;
+}
+
 async function criarRequestToken () {
-  let result: unknown = await HttpClient.get({
+  let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/authentication/token/new?api_key=${apiKey}`,
       method: "GET"
-  });
+  }) as resultRequestToken;
+
   requestToken = result.request_token;
 }
 
