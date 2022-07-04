@@ -22,6 +22,7 @@ interface ListaFilmes {
 
 interface itemFilme {
   original_title: string;
+  id: number;
 }
 
 interface HTTPRequest {
@@ -140,18 +141,35 @@ searchButton.addEventListener('click', async () => {
         let button = document.createElement('button');
         button.classList.add("add-to-list-button");
         button.textContent = "Adicionar em uma lista";
-        button.addEventListener('click', ()=>{
+        button.dataset.filmeId = item.id;
+
+        button.addEventListener('click', (e)=>{
+          let filmeId = e.target.dataset.filmeId;
           const lists = document.getElementById('show-lists') as HTMLElement;
           const filmButtons = document.getElementsByClassName('add-to-list-button') as HTMLCollectionOf<HTMLButtonElement>;
+          
           for(let btn of Array.from(filmButtons)){
             btn.style.display = 'none';
           }
+
           for(let list of Array.from(lists.childNodes[1].childNodes)){
             let buttonList = document.createElement('button');
             buttonList.textContent = "Adicionar filme a esta lista";
+            buttonList.dataset.listId = list.dataset.listId;
+            buttonList.addEventListener('click', (e)=>{
+              try{
+                adicionarFilmeNaLista(filmeId, e.target.dataset.listId);
+                alert("Adicionado com sucesso");
+              } catch (e) {
+                console.log(e);
+                alert("algo inesperado ocorreu");
+              }
+            });
             list.appendChild(buttonList);
           }
-        })
+
+        });
+
         li.appendChild(document.createTextNode(item.original_title));
         li.appendChild(button);
         ul.appendChild(li)
@@ -308,14 +326,18 @@ async function pegarTodasAsListas() {
     url: `https://api.themoviedb.org/3/account/${getAccountDetails.id}/lists?api_key=${apiKey}&language=pt-BR&session_id=${sessionId}&page=1`,
     method: "GET"
   }) as {results: Array<{name:string, description:string}>};
+
   const showLists = document.getElementById('show-lists') as HTMLElement;
   const ul = document.createElement('ul');
+
   for(let item in result.results){
     let newLi = document.createElement('li');
     newLi.textContent = result.results[item].name;
     newLi.title = result.results[item].description;
+    newLi.dataset.listId = result.results[item].id;
     ul.appendChild(newLi);
   }
+
   showLists.appendChild(ul);
 }
 
