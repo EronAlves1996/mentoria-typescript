@@ -142,21 +142,34 @@ searchButton.addEventListener('click', async () => {
 
 createListButton.addEventListener('click', ()=>{
   createListButton.remove();
-  console.log('cliquei');
 
   const listsContainer = document.getElementById('lists-container') as HTMLElement;
   const nome: HTMLInputElement = document.createElement('input');
   const descricao: HTMLInputElement = document.createElement('input');
-  const criarLista: HTMLButtonElement = document.createElement('button');
+  const criarListaBotao: HTMLButtonElement = document.createElement('button');
 
   nome.placeholder = 'nome';
   descricao.placeholder = 'descricao';
+  criarListaBotao.textContent = 'Criar Nova Lista';
 
-  criarLista.addEventListener('click', ()=>{
+  criarListaBotao.addEventListener('click', async ()=>{
     if(!(nome.value && descricao.value)) alert("Nome e/ou descricao são obrigatorios");
+    else {
+      try{
+        await criarLista(nome.value, descricao.value);
+        nome.remove();
+        descricao.remove();
+        criarListaBotao.remove();
+        listsContainer.appendChild(createListButton);
+      } catch (e) {
+        if(e.status !== 200){
+          alert("Algo deu errado!");
+        }
+      }
+    }
   });
 
-  listsContainer.append(nome, descricao, criarLista);
+  listsContainer.append(nome, descricao, criarListaBotao);
 })
 
 function preencherSenha() {
