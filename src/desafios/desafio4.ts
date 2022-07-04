@@ -154,7 +154,9 @@ searchButton.addEventListener('click', async () => {
               btn.style.display = 'none';
             }
 
-            for(let list of Array.from(lists.childNodes[1].childNodes)){
+            console.log(lists);
+
+            for(let list of Array.from(lists.getElementsByTagName('ul')[0].childNodes)){
               let buttonList: HTMLButtonElement = document.createElement('button');
               buttonList.classList.add('add-to-this-list-button');
               buttonList.textContent = "Adicionar filme a esta lista";
@@ -344,6 +346,8 @@ async function pegarTodasAsListas() {
 
   const showLists = document.getElementById('show-lists') as HTMLElement;
   const ul = document.createElement('ul');
+
+  showLists.innerHTML = "";
 
   for(let item in result.results){
     let newLi: HTMLElement = document.createElement('li');
