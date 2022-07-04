@@ -10,22 +10,8 @@
 // Atenção para o listener do botão login-button que devolve o sessionID do usuário
 // É necessário fazer um cadastro no https://www.themoviedb.org/ e seguir a documentação do site para entender como gera uma API key https://developers.themoviedb.org/3/getting-started/introduction
 
-let apiKey: string;
-let requestToken: string;
-let username: string;
-let password: string;
-let sessionId: string;
-let listId: string = '7101979';
 
-let loginButton = document.getElementById('login-button') as HTMLInputElement;
-let searchButton = document.getElementById('search-button') as HTMLInputElement;
-let searchContainer = document.getElementById('search-container') as HTMLInputElement;
-
-loginButton.addEventListener('click', async () => {
-  await criarRequestToken();
-  await logar();
-  await criarSessao();
-})
+// DECLARING INTERFACES
 
 interface ListaFilmes {
   page: number;
@@ -38,9 +24,100 @@ interface itemFilme {
   original_title: string;
 }
 
+interface HTTPRequest {
+  url: string,
+  method: string,
+  body?: request | string
+}
+
+interface requestLogin {
+  username: string,
+  password: string,
+  request_token: string,
+}
+
+interface requestSearch {
+  name: string;
+  description: string;
+  language: string
+}
+
+interface requestAddFilm {
+  media_id: string;
+}
+
+interface resultRequestToken {
+  request_token: string;
+}
+
+interface Session {
+  session_id: string;
+}
+
+//DECLARING TYPES
+
+type request = requestLogin | requestSearch | requestAddFilm;
+
+
+//DECLARING CLASSES
+
+class HttpClient {
+  static async get({url, method, body}: HTTPRequest) {
+    return new Promise((resolve, reject) => {
+      let request = new XMLHttpRequest();
+      request.open(method, url, true);
+
+      request.onload = () => {
+        if (request.status >= 200 && request.status < 300) {
+          resolve(JSON.parse(request.responseText));
+        } else {
+          reject({
+            status: request.status,
+            statusText: request.statusText
+          })
+        }
+      }
+      request.onerror = () => {
+        reject({
+          status: request.status,
+          statusText: request.statusText
+        })
+      }
+
+      if (body) {
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        body = JSON.stringify(body);
+      }
+      request.send(body);
+    })
+  }
+}
+
+
+//DECLARING VARIABLES
+
+let apiKey: string;
+let requestToken: string;
+let username: string;
+let password: string;
+let sessionId: string;
+let listId: string = '7101979';
+
+let loginButton = document.getElementById('login-button') as HTMLInputElement;
+let searchButton = document.getElementById('search-button') as HTMLInputElement;
+let searchContainer = document.getElementById('search-container') as HTMLInputElement;
+
+//DECLARING FUNCTIONS
+
+loginButton.addEventListener('click', async () => {
+  await criarRequestToken();
+  await logar();
+  await criarSessao();
+})
+
 searchButton.addEventListener('click', async () => {
   let lista = document.getElementById("lista") as HTMLElement;
-  
+
   if (lista) {
     lista.outerHTML = "";
   }
@@ -85,62 +162,6 @@ function validateLoginButton() {
   }
 }
 
-interface HTTPRequest {
-  url: string,
-  method: string,
-  body?: request | string
-}
-
-interface requestLogin {
-  username: string,
-  password: string,
-  request_token: string,
-}
-
-interface requestSearch {
-  name: string;
-  description: string;
-  language: string
-}
-
-interface requestAddFilm {
-  media_id: string;
-}
-
-type request = requestLogin | requestSearch | requestAddFilm;
-
-class HttpClient {
-  static async get({url, method, body}: HTTPRequest) {
-    return new Promise((resolve, reject) => {
-      let request = new XMLHttpRequest();
-      request.open(method, url, true);
-
-      request.onload = () => {
-        if (request.status >= 200 && request.status < 300) {
-          resolve(JSON.parse(request.responseText));
-        } else {
-          reject({
-            status: request.status,
-            statusText: request.statusText
-          })
-        }
-      }
-      request.onerror = () => {
-        reject({
-          status: request.status,
-          statusText: request.statusText
-        })
-      }
-
-      if (body) {
-        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        body = JSON.stringify(body);
-      }
-      request.send(body);
-    })
-  }
-}
-
 async function procurarFilme(query: string) {
   query = encodeURI(query);
   console.log(query);
@@ -158,10 +179,6 @@ async function adicionarFilme(filmeId: string) {
       method: "GET"
   })
   console.log(result);
-}
-
-interface resultRequestToken {
-  request_token: string;
 }
 
 async function criarRequestToken () {
@@ -185,9 +202,7 @@ async function logar() {
   })
 }
 
-interface Session {
-  session_id: string;
-}
+
 
 async function criarSessao() {
   let result = await HttpClient.get({
