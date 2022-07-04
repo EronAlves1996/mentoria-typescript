@@ -146,7 +146,7 @@ searchButton.addEventListener('click', async () => {
 
         button.addEventListener('click', (e)=>{
           if(e){
-            let filmeId = (e.target as HTMLButtonElement).dataset.filmeId;
+            let filmeId: string = (e.target as HTMLButtonElement).dataset.filmeId as string;
             const lists = document.getElementById('show-lists') as HTMLElement;
             const filmButtons = document.getElementsByClassName('add-to-list-button') as HTMLCollectionOf<HTMLButtonElement>;
 
@@ -163,7 +163,7 @@ searchButton.addEventListener('click', async () => {
               buttonList.addEventListener('click', (e)=>{
                 const listButtons = document.getElementsByClassName('add-to-this-list-button');
                 try{
-                  adicionarFilmeNaLista(filmeId, e.target.dataset.listId);
+                  adicionarFilmeNaLista(filmeId, (e.target as HTMLButtonElement).dataset.listId as string);
                   alert("Adicionado com sucesso");
                   for (let n of Array.from(listButtons)){
                     n.remove();
@@ -336,7 +336,7 @@ async function pegarTodasAsListas() {
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/account/${getAccountDetails.id}/lists?api_key=${apiKey}&language=pt-BR&session_id=${sessionId}&page=1`,
       method: "GET"
-  }) as {results: Array<{name:string, description:string}>};
+  }) as {results: Array<{name:string, description:string, id: number}>};
 
   const showLists = document.getElementById('show-lists') as HTMLElement;
   const ul = document.createElement('ul');
@@ -345,7 +345,7 @@ async function pegarTodasAsListas() {
     let newLi = document.createElement('li');
     newLi.textContent = result.results[item].name;
     newLi.title = result.results[item].description;
-    newLi.dataset.listId = result.results[item].id;
+    newLi.dataset.listId = result.results[item].id.toString();
     ul.appendChild(newLi);
   }
 
