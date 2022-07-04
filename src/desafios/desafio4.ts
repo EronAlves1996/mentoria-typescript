@@ -160,10 +160,10 @@ searchButton.addEventListener('click', async () => {
               buttonList.textContent = "Adicionar filme a esta lista";
               buttonList.dataset.listId = (list as HTMLElement).dataset.listId;
 
-              buttonList.addEventListener('click', (e)=>{
+              buttonList.addEventListener('click', async (e)=>{
                 const listButtons = document.getElementsByClassName('add-to-this-list-button');
                 try{
-                  adicionarFilmeNaLista(filmeId, (e.target as HTMLButtonElement).dataset.listId as string);
+                  await adicionarFilmeNaLista(filmeId, (e.target as HTMLButtonElement).dataset.listId as string);
                   alert("Adicionado com sucesso");
                   for (let n of Array.from(listButtons)){
                     n.remove();
@@ -319,12 +319,16 @@ async function adicionarFilmeNaLista(filmeId: string, listaId: string) {
   console.log(result);
 }
 
-async function pegarLista() {
+async function pegarLista(idList: string) {
   let result = await HttpClient.get({
-    url: `https://api.themoviedb.org/3/list/${listId}?api_key=${apiKey}`,
+    url: `https://api.themoviedb.org/3/list/${idList}?api_key=${apiKey}`,
       method: "GET"
-  })
-  console.log(result);
+  }) as {items: Array<{original_title: string}>};
+  let list: string = "";
+  for(let items of result.items){
+    list += items.original_title + "\n";
+  };
+  alert(list);
 }
 
 async function pegarTodasAsListas() {
@@ -342,10 +346,21 @@ async function pegarTodasAsListas() {
   const ul = document.createElement('ul');
 
   for(let item in result.results){
-    let newLi = document.createElement('li');
+    let newLi: HTMLElement = document.createElement('li');
+    let button: HTMLButtonElement = document.createElement('button');
+
     newLi.textContent = result.results[item].name;
     newLi.title = result.results[item].description;
     newLi.dataset.listId = result.results[item].id.toString();
+
+    button.textContent = "Mostrar Lista";
+    button.dataset.listId = result.results[item].id.toString();
+
+    button.addEventListener('click', e=>{
+      pegarLista((e.target as HTMLButtonElement).dataset.listId as string);
+    });
+
+    newLi.appendChild(button);
     ul.appendChild(newLi);
   }
 
