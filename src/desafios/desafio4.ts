@@ -54,6 +54,10 @@ interface Session {
   session_id: string;
 }
 
+interface accountDetails {
+  id:string;
+}
+
 //DECLARING TYPES
 
 type request = requestLogin | requestSearch | requestAddFilm;
@@ -163,7 +167,7 @@ createListButton.addEventListener('click', ()=>{
         listsContainer.appendChild(createListButton);
       } catch (e) {
         if(e.status !== 200){
-          alert("Algo deu errado!");
+          alert("Algo deu errado! Verifique se está tudo certo e tente novamente!");
         }
       }
     }
@@ -240,6 +244,7 @@ async function criarSessao() {
     url: `https://api.themoviedb.org/3/authentication/session/new?api_key=${apiKey}&request_token=${requestToken}`,
       method: "GET"
   }) as Session;
+  console.log(result);
   sessionId = result.session_id;
 }
 
@@ -272,6 +277,20 @@ async function pegarLista() {
     url: `https://api.themoviedb.org/3/list/${listId}?api_key=${apiKey}`,
       method: "GET"
   })
+  console.log(result);
+}
+
+async function pegarTodasAsListas() {
+  let getAccountDetails = await HttpClient.get({   
+    url:`https://api.themoviedb.org/3/account?api_key=${apiKey}&session_id=${sessionId}`,
+    method: "GET"
+  }) as accountDetails;
+
+  let result = await HttpClient.get({
+    url: `https://api.themoviedb.org/3/account/${getAccountDetails.id}/lists?api_key=${apiKey}&language=pt-BR&session_id=${sessionId}&page=1`,
+    method: "GET"
+  });
+
   console.log(result);
 }
 
