@@ -106,6 +106,7 @@ let listId: string = '7101979';
 let loginButton = document.getElementById('login-button') as HTMLInputElement;
 let searchButton = document.getElementById('search-button') as HTMLInputElement;
 let searchContainer = document.getElementById('search-container') as HTMLInputElement;
+const createListButton = document.getElementById('create-list-button') as HTMLButtonElement;
 
 //DECLARING FUNCTIONS
 
@@ -137,6 +138,25 @@ searchButton.addEventListener('click', async () => {
     }
   }
   searchContainer.appendChild(ul);
+});
+
+createListButton.addEventListener('click', ()=>{
+  createListButton.remove();
+  console.log('cliquei');
+
+  const listsContainer = document.getElementById('lists-container') as HTMLElement;
+  const nome: HTMLInputElement = document.createElement('input');
+  const descricao: HTMLInputElement = document.createElement('input');
+  const criarLista: HTMLButtonElement = document.createElement('button');
+
+  nome.placeholder = 'nome';
+  descricao.placeholder = 'descricao';
+
+  criarLista.addEventListener('click', ()=>{
+    if(!(nome.value && descricao.value)) alert("Nome e/ou descricao são obrigatorios");
+  });
+
+  listsContainer.append(nome, descricao, criarLista);
 })
 
 function preencherSenha() {
@@ -201,8 +221,6 @@ async function logar() {
     }
   })
 }
-
-
 
 async function criarSessao() {
   let result = await HttpClient.get({
