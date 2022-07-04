@@ -147,7 +147,7 @@ searchButton.addEventListener('click', async () => {
 createListButton.addEventListener('click', ()=>{
   createListButton.remove();
 
-  const listsContainer = document.getElementById('lists-container') as HTMLElement;
+  const listsContainer = document.getElementById('create-list') as HTMLElement;
   const nome: HTMLInputElement = document.createElement('input');
   const descricao: HTMLInputElement = document.createElement('input');
   const criarListaBotao: HTMLButtonElement = document.createElement('button');
@@ -289,9 +289,16 @@ async function pegarTodasAsListas() {
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/account/${getAccountDetails.id}/lists?api_key=${apiKey}&language=pt-BR&session_id=${sessionId}&page=1`,
     method: "GET"
-  });
-
-  console.log(result);
+  }) as {results: Array<{name:string, description:string}>};
+  const showLists = document.getElementById('show-lists') as HTMLElement;
+  const ul = document.createElement('ul');
+  for(let item in result.results){
+    let newLi = document.createElement('li');
+    newLi.textContent = result.results[item].name;
+    newLi.title = result.results[item].description;
+    ul.appendChild(newLi);
+  }
+  showLists.appendChild(ul);
 }
 
 {/* <div style="display: flex;">
