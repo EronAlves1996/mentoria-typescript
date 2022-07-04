@@ -88,14 +88,26 @@ function validateLoginButton() {
 interface HTTPRequest {
   url: string,
   method: string,
-  body?: login | string
+  body?: request | string
 }
 
-interface login {
+interface requestLogin {
   username: string,
   password: string,
-  request_token: string
+  request_token: string,
 }
+
+interface requestSearch {
+  name: string;
+  description: string;
+  language: string
+}
+
+interface requestAddFilm {
+  media_id: string;
+}
+
+type request = requestLogin | requestSearch | requestAddFilm;
 
 class HttpClient {
   static async get({url, method, body}: HTTPRequest) {
@@ -185,7 +197,7 @@ async function criarSessao() {
   sessionId = result.session_id;
 }
 
-async function criarLista(nomeDaLista, descricao) {
+async function criarLista(nomeDaLista: string, descricao: string) {
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/list?api_key=${apiKey}&session_id=${sessionId}`,
       method: "POST",
@@ -198,7 +210,7 @@ async function criarLista(nomeDaLista, descricao) {
   console.log(result);
 }
 
-async function adicionarFilmeNaLista(filmeId, listaId) {
+async function adicionarFilmeNaLista(filmeId: string, listaId: string) {
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/list/${listaId}/add_item?api_key=${apiKey}&session_id=${sessionId}`,
       method: "POST",
