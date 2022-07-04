@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script src="dist/app.js" defer></script>
-</head>
-<body>
-    <input id="input1">
-    <input id="input2">
-    <button id="button">Clique aqui</button>
-</body>
+    <!--<script src="dist/app.js" defer></script>-->
+  </head>
+  <body>
+    <div style="display: flex;">
+      <div style="display: flex; width: 300px; height: 100px; justify-content: space-between; flex-direction: column;">
+        <input id="login" placeholder="login" onchange="preencherLogin(event)">
+        <input id="senha" placeholder="senha" type="password" onchange="preencherSenha(event)">
+        <input id="api-key" placeholder="api key" onchange="preencherApi()">
+        <button id="login-button" disabled>login</button>
+      </div>
+      <div id="search-container" style="margin-left: 20px">
+        <input id="search" placeholder="escreva...">
+        <button id="search-button">pesquisar filme</button>
+      </div>
+    </div>   
+    <script src="src/desafios/desafio4.js"></script>
+  </body>
 </html>
