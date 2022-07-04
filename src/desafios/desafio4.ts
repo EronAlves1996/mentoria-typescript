@@ -118,6 +118,7 @@ loginButton.addEventListener('click', async () => {
   await criarRequestToken();
   await logar();
   await criarSessao();
+  await pegarTodasAsListas();
 })
 
 searchButton.addEventListener('click', async () => {
@@ -136,7 +137,23 @@ searchButton.addEventListener('click', async () => {
     if('results' in listaDeFilmes){
       for (const item of listaDeFilmes.results) {
         let li = document.createElement('li');
-        li.appendChild(document.createTextNode(item.original_title))
+        let button = document.createElement('button');
+        button.classList.add("add-to-list-button");
+        button.textContent = "Adicionar em uma lista";
+        button.addEventListener('click', ()=>{
+          const lists = document.getElementById('show-lists') as HTMLElement;
+          const filmButtons = document.getElementsByClassName('add-to-list-button') as HTMLCollectionOf<HTMLButtonElement>;
+          for(let btn of Array.from(filmButtons)){
+            btn.style.display = 'none';
+          }
+          for(let list of Array.from(lists.childNodes[1].childNodes)){
+            let buttonList = document.createElement('button');
+            buttonList.textContent = "Adicionar filme a esta lista";
+            list.appendChild(buttonList);
+          }
+        })
+        li.appendChild(document.createTextNode(item.original_title));
+        li.appendChild(button);
         ul.appendChild(li)
       }
     }
@@ -165,6 +182,7 @@ createListButton.addEventListener('click', ()=>{
         descricao.remove();
         criarListaBotao.remove();
         listsContainer.appendChild(createListButton);
+        pegarTodasAsListas();
       } catch (e) {
         if(e.status !== 200){
           alert("Algo deu errado! Verifique se está tudo certo e tente novamente!");
