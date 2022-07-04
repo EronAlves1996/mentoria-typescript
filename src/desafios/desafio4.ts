@@ -88,7 +88,13 @@ function validateLoginButton() {
 interface HTTPRequest {
   url: string,
   method: string,
-  body?: string
+  body?: login | string
+}
+
+interface login {
+  username: string,
+  password: string,
+  request_token: string
 }
 
 class HttpClient {
@@ -167,11 +173,15 @@ async function logar() {
   })
 }
 
+interface Session {
+  session_id: string;
+}
+
 async function criarSessao() {
   let result = await HttpClient.get({
     url: `https://api.themoviedb.org/3/authentication/session/new?api_key=${apiKey}&request_token=${requestToken}`,
       method: "GET"
-  })
+  }) as Session;
   sessionId = result.session_id;
 }
 
